@@ -15,7 +15,7 @@ return (
   <div>
     <h1 className='text-center text-6xl m-4 font-bold'>Meme Maker</h1>
     <div className='flex flex-wrap justify-between gap-10'>
-      {response.data.memes.map((item :any) => {
+      {response.data.memes.filter((item:any)  => item.box_count === 2).map((item :any) => {
         return (
           <div key={item.id} >
               <Image src={item.url} alt={item.name} width={300} height={300}  style={{height:300}}/>
