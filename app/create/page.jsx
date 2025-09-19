@@ -1,89 +1,12 @@
-// "use client"
-// import React, { useState, useEffect, useRef } from 'react'
-// import Image from 'next/image';
-// import Link from 'next/link';
-
-// const Generate = ({searchParams})=> {
-
- 
-
-//   const [image,setImage] = useState(null)
-//   const [load,setload] = useState(false)
-  
-  
- 
-//   let text1 = useRef()
-//   let text2 = useRef()
-
-//  const Create = async (event) =>{
-//   event.preventDefault();
-//   setload(true)
-
-//   const data = await fetch(`https://api.imgflip.com/caption_image?template_id=${searchParams.id}&username=SaadShah1&password=helloqwerty&text0=${text1.current.value}&text1=${text2.current.value}
-//     `, {
-//     method: 'POST',
-// }); 
-//    const respone = await data.json()
-//    console.log(respone);
-//    setImage(respone.data.url)
-//    setload(false)
-   
-//  }
-
-
- 
-
-//   return (
-//     <>
-//     <div className='flex justify-around'>
-//      <h1 className='text-3xl'>Create Meme</h1>
-//      <button className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
-//     <Link href={"/"}>Go to Home</Link>
-//       </button>
-
-//     </div>
-//       <div className='flex justify-evenly flex-wrap mt-4 border p-5'>
-//         <Image src={searchParams.url} width={200} height={200} alt='no-image ' />
-//        <div>
-//         <h1 className='text-3xl'>Enter Meme Text</h1>
-//        {
-//          (
-//           <div className='flex justify-center gap-5 mt-5 flex-wrap'>
-//        <form onSubmit={Create}>
-//        <input
-//               type="text"
-//               placeholder="Type here"
-//               className="text-black border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" ref={text1} /> <br /> <br />
-//             <input
-//               type="text"
-//               placeholder="Type here"
-//               className="text-black border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" ref={text2}  /> <br /> <br />
-//             <button className='m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600' type='submit'>{load ? "loading" : "Generate"}</button>
-//        </form>
-//           </div>
-//         ) 
-//       }
-//        </div>
-//       </div>
-     
-//       <div className='flex justify-center mt-4'>
-//       {image ? <Image src={image} width={400} height={400} alt="loading" /> :null}
-
-//       </div>
-//     </>
-//   )
-// } 
-
-// export default Generate
-
-"use client"
-import React, { useState, useEffect, useRef } from 'react'
-import Image from 'next/image';
-import Link from 'next/link';
+"use client";
+import React, { useState, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 const Generate = ({ searchParams }) => {
   const [image, setImage] = useState(null);
-  const [load, setLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   let text1 = useRef();
   let text2 = useRef();
@@ -91,91 +14,135 @@ const Generate = ({ searchParams }) => {
   // Function to create the meme
   const Create = async (event) => {
     event.preventDefault();
-    setLoad(true);
+    setLoading(true);
+    setError("");
 
-    // API request to generate meme
-    const data = await fetch(
-      `https://api.imgflip.com/caption_image?template_id=${searchParams.id}&username=SaadShah1&password=helloqwerty&text0=${text1.current.value}&text1=${text2.current.value}`,
-      {
-        method: 'POST',
+    try {
+      const res = await fetch(
+        `https://api.imgflip.com/caption_image?template_id=${searchParams.id}&username=SaadShah1&password=helloqwerty&text0=${encodeURIComponent(
+          text1.current.value
+        )}&text1=${encodeURIComponent(text2.current.value)}`,
+        { method: "POST" }
+      );
+
+      const data = await res.json();
+      if (data.success) {
+        setImage(data.data.url);
+      } else {
+        setError("Failed to generate meme. Please try again.");
       }
-    );
-    const response = await data.json();
-    console.log(response);
-    setImage(response.data.url);
-    setLoad(false);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    }
+
+    setLoading(false);
   };
 
   // Function to download the image
   const downloadImage = () => {
     if (image) {
-      // Create an anchor tag dynamically
-      const link = document.createElement('a');
-      link.href = image; // Set the image URL as the href
-      link.download = 'generated_meme.jpg'; // Specify the default download file name
-      link.click(); // Trigger the download by simulating a click
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "generated_meme.jpg";
+      link.click();
     }
   };
 
   return (
-    <>
-      <div className="flex justify-around">
-        <h1 className="text-3xl">Create Meme</h1>
-        <button className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
-          <Link href={"/"}>Go to Home</Link>
-        </button>
+    <div className="container mx-auto p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">🎨 Create Meme</h1>
+        <Link
+          href={"/"}
+          className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+        >
+          Go Home
+        </Link>
       </div>
-      <div className="flex justify-evenly flex-wrap mt-4 border p-5">
-        <Image src={searchParams.url} width={200} height={200} alt="no-image" />
-        <div>
-          <h1 className="text-3xl">Enter Meme Text</h1>
 
-          <div className="flex justify-center gap-5 mt-5 flex-wrap">
-            <form onSubmit={Create}>
+      {/* Template + Form */}
+      <div className="grid md:grid-cols-2 gap-6 mt-6">
+        {/* Template Image */}
+        <div className="flex justify-center">
+          <Image
+            src={searchParams.url}
+            width={300}
+            height={300}
+            alt="Template"
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+
+        {/* Meme Form */}
+        <div>
+          <h2 className="text-2xl font-semibold mb-4">Enter Meme Text</h2>
+          <form onSubmit={Create} className="space-y-4">
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">
+                Top Text
+              </label>
               <input
                 type="text"
-                placeholder="Type here"
-                className="text-black border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter top text"
                 ref={text1}
+                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
-              <br />
-              <br />
+            </div>
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">
+                Bottom Text
+              </label>
               <input
                 type="text"
-                placeholder="Type here"
-                className="text-black border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter bottom text"
                 ref={text2}
+                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
-              <br />
-              <br />
-              <button
-                className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
-                type="submit"
-              >
-                {load ? "loading" : "Generate"}
-              </button>
-            </form>
-          </div>
+            </div>
+
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition w-full flex justify-center items-center"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white"></span>
+              ) : (
+                "Generate Meme"
+              )}
+            </button>
+          </form>
+
+          {error && (
+            <p className="text-red-500 mt-3 font-medium">{error}</p>
+          )}
         </div>
       </div>
 
-      {/* Display generated meme image */}
-      <div className="flex justify-center mt-4">
-        {image ? <Image src={image} width={400} height={400} alt="generated meme" /> : null}
-      </div>
-
-      {/* Download Button */}
+      {/* Generated Meme */}
       {image && (
-        <div className="flex justify-center mt-4">
+        <div className="flex flex-col items-center mt-10">
+          <h2 className="text-xl font-bold mb-4">Your Meme</h2>
+          <Image
+            src={image}
+            width={400}
+            height={400}
+            alt="Generated Meme"
+            className="rounded-lg shadow-lg"
+          />
           <button
-            className="m-2 px-4 py-2 bg-green-500 text-white font-semibold rounded hover:bg-green-600"
             onClick={downloadImage}
+            className="mt-5 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
           >
-            Download Meme
+            ⬇️ Download Meme
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
