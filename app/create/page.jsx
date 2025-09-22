@@ -94,7 +94,7 @@ const Generate = ({ searchParams }) => {
                 type="text"
                 placeholder="Enter top text"
                 ref={text1}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full text-black border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
@@ -106,7 +106,7 @@ const Generate = ({ searchParams }) => {
                 type="text"
                 placeholder="Enter bottom text"
                 ref={text2}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full text-black border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
